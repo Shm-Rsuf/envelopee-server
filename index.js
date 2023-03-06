@@ -13,6 +13,12 @@ app.use(cors());
 //port
 const PORT = process.env.PORT || 4000;
 
+//routes
+
+app.get("/", (req, res) => {
+  res.json({ message: "respose successfull" });
+});
+
 //connect to db
 mongoose
   .connect(process.env.MONGO_URL, {
