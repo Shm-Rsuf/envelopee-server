@@ -109,4 +109,15 @@ const findUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, findUser };
+//get all users
+const findAllUsers = async (req, res) => {
+  try {
+    const users = await userModel.find({});
+    res.status(200).json(users);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+module.exports = { registerUser, loginUser, findUser, findAllUsers };
