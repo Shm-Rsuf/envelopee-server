@@ -10,9 +10,8 @@ const createToken = (_id) => {
 
 //register user
 const registerUser = async (req, res) => {
+  const { name, email, password } = req.body;
   try {
-    const { name, email, password } = req.body;
-
     const exist = await userModel.findOne({ email });
 
     //if user is true
@@ -52,10 +51,43 @@ const registerUser = async (req, res) => {
     res
       .status(200)
       .json({ _id: user._id, name, email, password: user.password, token });
-  } catch (error) {
+  } catch (err) {
     console.log(err);
     res.status(500).json(err);
   }
 };
 
-module.exports = { registerUser };
+//login user
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await userModel.findOne({ email });
+    //email or password not match
+    if (!user) {
+      return res.status(400).json("Invalid email or password");
+    }
+
+    //comparing password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    //invalid password
+    if (!isValidPassword) {
+      return res.status(400).json("Incorrect password");
+    }
+
+    //create token
+    const token = await createToken(user._id);
+    //send request
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email,
+      password: user.password,
+      token,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+module.exports = { registerUser, loginUser };
